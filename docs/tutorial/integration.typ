@@ -87,15 +87,6 @@ The default theme _New Hamber_ provides built-in support for Pagefind.
   pagefind --site ./dist --output-subdir pagefind
   ```
 
-  If you changed the root of your site (i.e. you are deploying to a subdir), you need to change the command.
-
-  ```sh
-  # if your subdir is `haita`
-  pagefind --site ./dist --output-subdir haita/pagefind
-  # if your subdir is `foo/bar/baz`
-  pagefind --site ./dist --output-subdir foo/bar/baz/pagefind
-  ```
-
 After you finished all of that, you should be able to see a pagefind searchbox in your main table of contents at the
 left hand side.
 

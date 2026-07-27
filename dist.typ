@@ -11,13 +11,11 @@
 #book(
   debug: true,
   title: "Haita Docs Documentation",
-  canonical-url: "https://wensimehrp.github.io",
-  root: "haita",
+  base-url: "https://wensimehrp.github.io/haita",
   html-renderer: new-hamber.html-renderer.with(
     pagefind-enabled: true,
     summary-image-renderer: new-hamber.summary-image-renderer.with(
       "Haita",
-      "https://wensimehrp.github.io",
       bottom-content: [
         Haita is a pure Typst documentation framework
       ],

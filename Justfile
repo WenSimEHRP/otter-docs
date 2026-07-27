@@ -10,7 +10,7 @@ build:
 
 # index the site
 index: build
-    pagefind --site ./dist --output-subdir haita/pagefind
+    pagefind --site ./dist --output-subdir pagefind
 
 # watch build output
 watch:

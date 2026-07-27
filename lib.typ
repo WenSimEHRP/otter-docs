@@ -56,7 +56,13 @@
   }
 }
 
-#let normalize-tree(tree, root) = {
+#let normalize-base-url(base-url) = {
+  if base-url == none { return none }
+  let base-url = base-url.trim("/", at: end, repeat: true)
+  if base-url.len() == 0 { none } else { base-url }
+}
+
+#let normalize-tree(tree) = {
   assert(type(tree) == array, message: "The tree argument must be an array. Maybe you forgot a comma?")
   tree.map(it => {
     if type(it) != dictionary or "kind" not in it {
@@ -67,7 +73,6 @@
     }
     let path-str = none
     if "path" in it {
-      it.path = root + it.path
       path-str = it.path.join("/")
       it.insert("page-label", label("page:/" + path-str))
     }
@@ -94,7 +99,7 @@
       it.insert("headings", chapter-heading-state.final())
     }
     if "children" in it {
-      it = (..it, children: normalize-tree(it.children, root))
+      it = (..it, children: normalize-tree(it.children))
     }
     it
   })
@@ -111,11 +116,15 @@
   /// The description of the documentation.
   /// -> str
   description: "",
-  /// The canonical URL of the documentation, e.g. the site's domain when you
-  /// deploy the documentation to a website. Examples include `<username>.github.io`
-  /// for GitHub Pages and `<project name>.pages.dev` for Cloudflare Pages.
-  /// -> str
-  canonical-url: "",
+  /// The URL the documentation is deployed at, including the subfolder when you
+  /// are not deploying to the root of a site. Examples include
+  /// `https://<username>.github.io/<project name>` for GitHub Pages and
+  /// `https://<project name>.pages.dev` for Cloudflare Pages.
+  ///
+  /// This setting is optional: it is only used to build the absolute URLs
+  /// that SEO metadata requires (the canonical link, Open Graph and Twitter cards).
+  /// -> none | str
+  base-url: none,
   /// Whether or not to render the summary images. Summary images are displayed
   /// when pasting pages' link in various social media, such as Telegram, Discord,
   /// and X.
@@ -124,11 +133,6 @@
   /// The authors of the documentation. It should be an array of strings.
   /// -> array
   authors: (),
-  /// The root of the site. Set this when you are not deploying the documentation
-  /// to the root of your website, instead you're deploying it to a subfolder.
-  /// E.g., when deploying to GitHub Pages.
-  /// -> str | array
-  root: (),
   /// The language of the documentation
   /// -> str
   lang: "en",
@@ -136,10 +140,7 @@
   /// -> function
   html-renderer: (..args) => new-hamber.html-renderer.with(
     summary-image-renderer: if args.named().render-summary-image {
-      new-hamber.summary-image-renderer.with(
-        args.named().title,
-        args.named().canonical-url,
-      )
+      new-hamber.summary-image-renderer.with(args.named().title)
     } else {
       none
     },
@@ -158,18 +159,17 @@
   /// -> any
   ..args,
 ) = context {
-  let root = if type(root) == array { root } else { root.split("/").filter(it => it.len() > 0) }
+  let base-url = normalize-base-url(base-url)
   assert(type(authors) == array, message: "Authors must be an array of strings.")
-  let normalized = normalize-tree(tree, root)
+  let normalized = normalize-tree(tree)
   // debug for testing the tree
-  if debug { document(root.join("/") + "/__debug_tree.html", [#normalized]) }
+  if debug { document("/__debug_tree.html", [#normalized]) }
   if target() in ("paged",) {
     panic("Paged export is suspended until https://github.com/typst/typst/issues/7998 is resolved")
     // paged-renderer(
     //   normalized,
     //   description: description,
     //   authors: authors,
-    //   root: root,
     //   lang: lang,
     //   ..args,
     // )
@@ -179,10 +179,9 @@
       normalized,
       title: title,
       description: description,
-      canonical-url: canonical-url,
+      base-url: base-url,
       render-summary-image: render-summary-image,
       authors: authors,
-      root: root,
       lang: lang,
       ..args,
     )
@@ -195,7 +194,6 @@
 /// #book(
 ///   html-renderer: new-hamber.html-renderer.with(
 ///     summary-image-renderer: lib.minimal-summary-image-renderer.with(
-///       <your-url-here>, // place your canonical url here. MANDATORY FIELD
 ///       image-content: it => [...] // your content here
 ///       // Don't complete any other fields
 ///     )
@@ -203,13 +201,16 @@
 /// )
 /// ```
 #let minimal-summary-image-renderer(
-  /// The canonical URL of your site. This is completed by the user
-  /// -> str
-  canonical-url,
   /// The chapter that would be feeded into the renderer.
   /// #highlight[Usually this is internal to the renderer, and should not be completed.]
   /// -> chapter
   chapter,
+  /// The base URL of your site, taken from `book`'s `base-url`.
+  /// #highlight[Usually this is internal to the renderer, and should not be completed.]
+  /// When it is `none` the image is referenced relative to the page instead of
+  /// by an absolute URL.
+  /// -> none | str
+  base-url: none,
   /// The width of the image in pixels. For the default PPI it is 1pt -> 1px.
   /// -> int
   width-px: 1200,
@@ -225,6 +226,7 @@
   image-content: chapter => none,
 ) = {
   let image-path = "/" + chapter.path.join("/") + "_summary.png"
+  let image-url = if base-url == none { chapter.path.last() + "_summary.png" } else { base-url + image-path }
   (
     document: document(
       image-path,
@@ -235,12 +237,12 @@
       ),
     ),
     og-properties: {
-      html.elem("meta", attrs: (property: "og:image", content: canonical-url + image-path))
+      html.elem("meta", attrs: (property: "og:image", content: image-url))
       html.elem("meta", attrs: (property: "og:image:type", content: "image/png"))
       html.elem("meta", attrs: (property: "og:image:width", content: str(width-px)))
       html.elem("meta", attrs: (property: "og:image:height", content: str(height-px)))
       html.meta(name: "twitter:card", content: "summary_large_image")
-      html.meta(name: "twitter:image", content: canonical-url + image-path)
+      html.meta(name: "twitter:image", content: image-url)
     },
   )
 }

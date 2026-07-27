@@ -344,8 +344,8 @@
 
 #let summary-image-renderer(
   site-title,
-  canonical-url,
   chapter,
+  base-url: none,
   bottom-content: none,
   // defaults to 1pt -> 1px
   width-px: 1200,
@@ -353,6 +353,7 @@
   ppi: 144,
 ) = {
   let image-path = "/" + chapter.path.join("/") + "_summary.png"
+  let image-url = if base-url == none { chapter.path.last() + "_summary.png" } else { base-url + image-path }
   (
     document: document(
       image-path,
@@ -369,12 +370,12 @@
       ],
     ),
     og-properties: {
-      og-property("image", content: canonical-url + image-path)
+      og-property("image", content: image-url)
       og-property("image:type", content: "image/png")
       og-property("image:width", content: str(width-px))
       og-property("image:height", content: str(height-px))
       html.meta(name: "twitter:card", content: "summary_large_image")
-      html.meta(name: "twitter:image", content: canonical-url + image-path)
+      html.meta(name: "twitter:image", content: image-url)
     },
   )
 }
@@ -382,9 +383,8 @@
 #let html-renderer(
   tree,
   lang: "en",
-  root: (),
   title: "",
-  canonical-url: "",
+  base-url: none,
   summary-image-renderer: none,
   footer-content: [
     Powered by #link("https://github.com/wensimehrp/haita")[Haita]. Made in Vancouver with love.
@@ -405,11 +405,10 @@
   let site-title = title
   import "@preview/typhoon:0.1.2"
   import "fonts/fonts.typ": font-css, font-files
-  let stylesheet-path = "/" + (root, "styles.css").flatten().join("/")
-  font-files(root.join("/")).join()
+  font-files().join()
   [
     #asset(
-      stylesheet-path,
+      "/styles.css",
       {
         read("styles/styles.css")
         str(typhoon._plugin.generate(bytes(page-classes.final().keys().join(" ", default: "")), cbor.encode((
@@ -438,7 +437,12 @@
     tree,
     chapter-generator: it => [
       #let page-path-str = "/" + it.path.join("/") + ".html"
-      #if type(summary-image-renderer) == function { summary-image-renderer(it).document }
+      #let page-url = if base-url != none { base-url + page-path-str }
+      #let up = ("..",) * (it.path.len() - 1)
+      #let summary-image = if type(summary-image-renderer) == function {
+        summary-image-renderer(it, base-url: base-url)
+      }
+      #if summary-image != none { summary-image.document }
       #document(page-path-str, html.html(lang: lang, {
         import html: *
         head({
@@ -446,7 +450,7 @@
           meta(charset: "utf-8")
           meta(name: "viewport", content: "width=device-width, initial-scale=1")
           title(it.title)
-          link(rel: "canonical", href: canonical-url + page-path-str)
+          if page-url != none { link(rel: "canonical", href: page-url) }
           // TODO: finish description here
           meta(name: "description", content: "...")
           // Styles
@@ -457,29 +461,23 @@
           og-property("title", content: to-string("" + it.title))
           og-property("description", content: to-string("" + [...]))
           og-property("type", content: "website")
-          og-property("url", content: canonical-url + page-path-str)
+          if page-url != none { og-property("url", content: page-url) }
           og-property("site_name", content: site-title)
-          if type(summary-image-renderer) == function {
-            summary-image-renderer(it).og-properties
-          }
+          if summary-image != none { summary-image.og-properties }
           // Twitter SEO
           meta(name: "twitter:title", content: to-string("" + it.title))
-          meta(name: "twitter:domain", content: canonical-url.replace(regex("https?://"), ""))
+          if base-url != none {
+            meta(name: "twitter:domain", content: base-url.replace(regex("^\w+://"), "").split("/").first())
+          }
           meta(name: "twitter:description", content: "...")
           if pagefind-enabled {
-            let link-path = "/" + (root + ("pagefind", "pagefind-component-ui.css")).join("/")
-            let script-path = "/" + (root + ("pagefind", "pagefind-component-ui.js")).join("/")
+            let link-path = (up + ("pagefind", "pagefind-component-ui.css")).join("/")
+            let script-path = (up + ("pagefind", "pagefind-component-ui.js")).join("/")
             link(href: link-path, rel: "stylesheet")
-            script(src: script-path, type: "module")
+            script(src: script-path, defer: true)
           }
         })
         body(class: "dark:bg-zinc-900", {
-          if pagefind-enabled {
-            elem("pagefind-config", attrs: (
-              bundle-path: "/" + (root + ("pagefind",)).join("/") + "/",
-              base-url: "/",
-            ))
-          }
           internal-html-renderer(
             tree,
             it,
@@ -494,8 +492,8 @@
 }
 
 
-#let paged-renderer(tree, root: (), ..args) = [
-  #document(root.join("/") + "/doc.pdf", for it in flatten-tree(tree) {
+#let paged-renderer(tree, ..args) = [
+  #document("/doc.pdf", for it in flatten-tree(tree) {
     it.content
   }) <doc.pdf>
 ]

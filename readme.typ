@@ -39,18 +39,18 @@
 #let sample-text = ```typ
 #import "@preview/haita:__PACKAGE_VERSION__": * // Always remember to import the package
 #book(
-  // The routing root. Useful when you are deploying to a folder
-  // under your root (e.g. when deployed to GitHub Pages)
-  // root: "haita",
+  // Where the site will be deployed. Optional: it is only used for the
+  // SEO metadata, everything inside the site is linked relatively.
+  // base-url: "https://username.github.io/haita",
   // Your document's contents
   tree: (
     // You can add arbitrary content. The content will be displayed
     // in the summary, but will not generate html pages.
     [= Introduction],
-    // This will create haita/index.html. The content of the
+    // This will create index.html. The content of the
     // chapter will be from `doc/intro.typ`
     chapter("index", content: include "doc/intro.typ"),
-    // This will create haita/doc/tutorial.html. In this case,
+    // This will create doc/tutorial.html. In this case,
     // the content of the chapter is not explicitly stated, so it
     // looks into ./doc/tutorial.typ in the current workspace.
     chapter("doc/tutorial"),
