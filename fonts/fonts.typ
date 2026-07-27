@@ -11,7 +11,7 @@
 
 #let (header, ..font-list) = csv("fontlist.csv")
 
-#let font-files(root) = font-list.map(((.., font-file)) => asset(root + "/fonts/" + font-file, read(
+#let font-files() = font-list.map(((.., font-file)) => asset("/fonts/" + font-file, read(
   font-file,
   encoding: none,
 )))
