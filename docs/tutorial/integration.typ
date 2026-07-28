@@ -102,6 +102,7 @@ left hand side.
     // The editor is the Ace editor. See `https://ace.c9.io/` for detailsa
     let script-text = ```js
     import ace from "https://cdn.jsdelivr.net/npm/ace-builds@1/+esm";
+    ace.config.set("basePath", "https://cdn.jsdelivr.net/npm/ace-builds@1/src-noconflict/");
 
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
