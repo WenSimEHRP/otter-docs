@@ -63,7 +63,7 @@
       } else if it.content.func() == heading {
         html.h2(class: "font-bold p-2", it.content.body)
       } else {
-        html.div(class: "p-2 prose prose-neutral prose-sm dark:prose-invert", it.content)
+        html.div(class: "p-2 prose prose-neutral prose-sm dark:prose-invert leading-normal", it.content)
       }
     }
       + if "children" in it and it.children.len() > 0 {
@@ -161,12 +161,13 @@
         )
     ))
     [#std.super(std.link(target-label, str(ftn-len + 1))) #source-label]
-    span(
-      class: "footnote-popup prose prose-neutral !prose-invert prose-sm text-white",
-      ftn.body,
-    )
   })
+  // fix math scrolling
+  show math.equation.where(block: true).or(frame): div.with(
+    class: "overflow-x-auto w-full overflow-y-hidden [&>:first-child]:mx-auto"
+  )
 
+  // add some custom display rules and add line counting
   show raw.where(block: true): it => {
     let code-fn = elem.with(
       "code",
@@ -225,75 +226,69 @@
     })
   }
 
-  div(class: "group", {
-    div(class: "relative", {
-      input(
+  input(class: {
+      "z-10 fixed md:hidden"
+      " peer appearance-none"
+      " left-0 w-8 h-20"
+      " checked:translate-y-0 checked:translate-x-72 checked:top-0"
+      " checked:w-full checked:h-full"
+    },
+    type: "checkbox",
+  )
+  div(class: {
+    "flex items-center justify-center"
+    " z-5 fixed w-8 h-20"
+    " border-r border-b border-neutral-300"
+    " bg-neutral-100 text-neutral-400"
+    " dark:border-transparent dark:bg-zinc-700"
+    " rounded-br-sm shadow-sm"
+    " md:hidden peer-checked:translate-x-72"
+    " transition-transform text-3xl"
+  })[|||]
+  nav(
+    id: "main-toc",
+    class: {
+      "dark:text-white w-72 z-10 flex fixed left-0 top-0 h-full"
+      " -translate-x-full shadow-sm md:shadow-none"
+      " peer-checked:translate-x-0 md:translate-x-0 flex-col"
+      " border-r border-neutral-300 dark:border-transparent bg-neutral-100"
+      " dark:bg-zinc-800 transition-transform"
+    },
+    {
+      sidebar-image
+      if pagefind-enabled {
+        elem("pagefind-modal-trigger", attrs: (class: "flex shrink-0 bg-white dark:bg-black h-9"), noscript(
+          class: "m-auto text-sm text-black dark:text-white",
+        )[
+          Enable JS for search support
+        ])
+        elem("pagefind-modal")
+      }
+      div(
         class: {
-          "z-10 fixed md:hidden"
-          " peer appearance-none"
-          " left-0 top-1/2 w-8 h-20"
-          " -translate-y-1/2"
-          " checked:translate-y-0 checked:translate-x-72 checked:top-0"
-          " checked:w-full checked:h-full"
+          "border-neutral-300 dark:border-transparent overflow-x-auto "
+          {
+            "block border-y px-2 py-1"
+            " border-neutral-300 bg-white"
+            " dark:border-transparent dark:bg-zinc-700"
+          }
+            .split(" ")
+            .map(cls => "[&_a[autofocus]]:" + cls)
+            .join(" ")
+          " "
+          {
+            "block border-y px-2 py-1"
+            " border-transparent"
+            " hover:bg-neutral-200 dark:hover:bg-zinc-700"
+          }
+            .split(" ")
+            .map(cls => "[&_a.toc-entry-other-page]:" + cls)
+            .join(" ")
         },
-        type: "checkbox",
+        summary-renderer(final-tree, it),
       )
-      div(class: {
-        "flex items-center justify-center"
-        " z-5 fixed top-1/2 w-8 h-20"
-        " border-r border-t border-b border-neutral-300"
-        " bg-neutral-100 text-neutral-400"
-        " dark:border-transparent dark:bg-zinc-700"
-        " rounded-r-sm shadow-sm"
-        " md:hidden -translate-y-1/2 peer-checked:translate-x-72"
-        " transition-transform text-3xl"
-      })[|||]
-    })
-    nav(
-      id: "main-toc",
-      class: {
-        "dark:text-white w-72 z-10 flex fixed left-0 top-0 h-full"
-        " -translate-x-full shadow-sm md:shadow-none"
-        " group-has-[:checked]:translate-x-0 md:translate-x-0 flex-col"
-        " border-r border-neutral-300 dark:border-transparent bg-neutral-100"
-        " dark:bg-zinc-800 transition-transform"
-      },
-      {
-        sidebar-image
-        if pagefind-enabled {
-          elem("pagefind-modal-trigger", attrs: (class: "flex shrink-0 bg-white dark:bg-black h-9"), noscript(
-            class: "m-auto text-sm text-black dark:text-white",
-          )[
-            Enable JS for search support
-          ])
-          elem("pagefind-modal")
-        }
-        div(
-          class: {
-            "border-neutral-300 dark:border-transparent overflow-x-auto "
-            {
-              "block border-y px-2 py-1"
-              " border-neutral-300 bg-white"
-              " dark:border-transparent dark:bg-zinc-700"
-            }
-              .split(" ")
-              .map(cls => "[&_a[autofocus]]:" + cls)
-              .join(" ")
-            " "
-            {
-              "block border-y px-2 py-1"
-              " border-transparent"
-              " hover:bg-neutral-200 dark:hover:bg-zinc-700"
-            }
-              .split(" ")
-              .map(cls => "[&_a.toc-entry-other-page]:" + cls)
-              .join(" ")
-          },
-          summary-renderer(final-tree, it),
-        )
-      },
-    )
-  })
+    },
+  )
 
   // only let pagefind index the article
   let main-content = elem(
@@ -301,7 +296,7 @@
     attrs: (
       id: "haita-main-content",
       class: {
-        "p-3 sm:p-6 md:p-8 min-w-full"
+        "p-3 sm:p-6 md:p-8 min-w-full mt-20 md:mt-0"
         " prose prose-neutral dark:prose-invert leading-normal"
         " prose-pre:bg-neutral-100 prose-pre:text-neutral-900"
         " prose-pre:border prose-pre:border-neutral-300"
@@ -444,7 +439,6 @@
             ),
           ),
         ))))
-        read("styles/footnote.css")
         read("styles/math.css")
         read("styles/code-lines.css")
         extra-css
