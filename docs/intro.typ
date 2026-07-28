@@ -1,8 +1,12 @@
+#import "mod.typ": *
 #title[Introduction]
 
-#let version = toml("../typst.toml").package.version
-
 Welcome to the documentation for Haita #version (hǎi tǎ, Mandarin Pinyin, lit. Sea Otter).
+
+#warning[It's not ready yet!][
+  Haita is a decent choice for organizing long, comprehensive documentation. But just like Typst, Haita is an unfinished
+  project, and is (currently) not a serious tool.
+]
 
 #import "../readme.typ": license-fragment-1, readme-fragment-1
 
@@ -80,11 +84,14 @@ the only tool required.
 
 = An Unfinished Project
 
-Haita is a decent choice for organizing long, comprehensive documentation. But just like Typst, Haita is an unfinished
-project, and is (currently) not a serious tool. Specifically, it's missing these features:
+Haita is still missing some features, specifically:
 
 - Internationalization support
-- Built-in search functions (#link(<pagefind-integration>)[pagefind integration] available)
+- Built-in search functions
+
+#tip[Pagefind Integration][
+  You can integrate Pagefind manually. See #link(<pagefind-integration>)[this page] for details.
+]
 
 However, if you want pure Typst documentation, ease of use, and/or MathML formulae, you might want to give it a try. If
 you want stability and extremely easy syntax, then maybe you should consider mdBook. If you have any issues, please feel
@@ -95,9 +102,9 @@ please #link("https://github.com/wensimehrp/haita/pulls")[open a pull request].
 
 #license-fragment-1
 
-= Tracking
-
-This site uses #link("https://umami.is/")[Umami] to track visitor status. It stores no cookies and does not collect
-personal data. All data collected are anonymous, and you can disable tracking for this site following #link(
-  "https://docs.umami.is/docs/exclude-my-own-visits",
-)[this guide].
+#info[Tracking][
+  This site uses #link("https://umami.is/")[Umami] to track visitor status. It stores no cookies and does not collect
+  personal data. All data collected are anonymous, and you can disable tracking for this site following #link(
+    "https://docs.umami.is/docs/exclude-my-own-visits",
+  )[this guide].
+]

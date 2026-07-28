@@ -11,7 +11,6 @@
   }
 }
 
-/// Inlines the SVG
 #let inline-svg(list) = {
   for child in list {
     if "tag" in child and child.tag != "" {
@@ -400,17 +399,26 @@
   )
 }
 
+/// _New Hamber_'s HTML renderer.
 #let html-renderer(
   tree,
   lang: "en",
   title: "",
   base-url: none,
   summary-image-renderer: none,
+  /// The footer is displayed on each page. Controls the footer's content.
+  /// -> content
   footer-content: [
     Powered by #link("https://github.com/wensimehrp/haita")[Haita]. Made in Vancouver with love.
   ],
+  /// Extra content to put into the global stylesheet
+  /// -> none | str
   extra-css: none,
+  /// Extra content to put into `head`
+  /// -> none | content
   extra-head-content: none,
+  /// The image of the navigation sidebar
+  /// -> content
   sidebar-image: html.a(
     href: "https://en.wikipedia.org/wiki/File:Sea_Otter_(Enhydra_lutris)_(25169790524)_crop.jpg",
     html.img(
@@ -418,6 +426,8 @@
       src: "https://upload.wikimedia.org/wikipedia/commons/0/02/Sea_Otter_%28Enhydra_lutris%29_%2825169790524%29_crop.jpg",
     ),
   ),
+  /// Whether or not to enable #link(<pagefind-integration>)[pagefind integration]
+  /// -> bool
   pagefind-enabled: false,
   ..args,
 ) = {

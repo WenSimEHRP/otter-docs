@@ -8,6 +8,9 @@
   ..args,
 )
 
+#import "@preview/frame-it:2.0.0": *
+#show: frame-style(styles.thmbox)
+
 #book(
   debug: true,
   title: "Haita Docs Documentation",
@@ -38,7 +41,7 @@
       offset-chapter("tutorial/using-typst-packages"),
       offset-chapter("tutorial/integration"),
       offset-chapter("tutorial/custom-renderer"),
-      offset-chapter("tutorial/continuous-integration"),
+      offset-chapter("tutorial/deploying"),
     )),
     divider(),
     offset-chapter("references"),
