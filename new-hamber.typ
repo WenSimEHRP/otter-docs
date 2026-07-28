@@ -11,6 +11,19 @@
   }
 }
 
+/// Inlines the SVG
+#let inline-svg(list) = {
+  for child in list {
+    if "tag" in child and child.tag != "" {
+      html.elem(
+        child.tag,
+        attrs: child.attrs,
+        inline-svg(child.children)
+      )
+    }
+  }
+}
+
 #let update-elem(elem, state: none) = {
   let classes = elem.fields().attrs.at("class", default: ())
   if type(classes) == str {
@@ -162,8 +175,8 @@
     div(class: "relative group", {
       elem("button", attrs: (
         class: {
-          "absolute right-2 top-2 px-2 py-1 z-10"
-          " text-xs font-medium"
+          "absolute right-2 top-2 p-1 z-10 not-prose"
+          " text-md" // controls the icon size
           " border border-neutral-300 bg-white text-neutral-600"
           " opacity-0 group-hover:opacity-100 transition-opacity"
           " hover:bg-neutral-100"
@@ -171,9 +184,18 @@
         },
         onclick: ```js
         const text = this.nextElementSibling.querySelector('code').textContent;
+
         const done = () => {
-          this.textContent = 'Copied!';
-          setTimeout(() => { this.textContent = 'Copy'; }, 2000);
+          const clipboard = this.querySelector('.clipboard');
+          const check = this.querySelector('.check');
+
+          clipboard.classList.add('hidden');
+          check.classList.remove('hidden');
+
+          setTimeout(() => {
+            clipboard.classList.remove('hidden');
+            check.classList.add('hidden');
+          }, 2000);
         };
         if (navigator.clipboard) {
           navigator.clipboard.writeText(text).then(done).catch(console.error);
@@ -192,7 +214,10 @@
           done();
         }
         ```.text,
-      ))[Copy]
+      ), {
+        div(class: "clipboard", inline-svg(xml("assets/clipboard.svg")))
+        div(class: "check hidden", inline-svg(xml("assets/check.svg")))
+      })
       pre(code-fn(for line in it.lines {
         span(class: "line", line)
         linebreak()
