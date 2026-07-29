@@ -10,10 +10,7 @@ Welcome to the documentation for Haita #version (hǎi tǎ, Mandarin Pinyin, lit.
 
 #import "../readme.typ": license-fragment-1, readme-fragment-1
 
-#readme-fragment-1
-
 #import "@preview/merman:0.1.0": mermaid
-
 #let to-raw-html(content) = {
   for c in content {
     if type(c) == dictionary and "tag" in c {
@@ -24,7 +21,6 @@ Welcome to the documentation for Haita #version (hǎi tǎ, Mandarin Pinyin, lit.
     }
   }
 }
-
 #figure(caption: [How Haita Works], {
   // TODO: find a way to make this output better SVG
   //       font; colour; better theming.
@@ -55,15 +51,18 @@ Welcome to the documentation for Haita #version (hǎi tǎ, Mandarin Pinyin, lit.
     ),
     ```mermaid
     flowchart LR
-    Typst --> Haita
-    Mermaid --> Haita
-    Markdown --> Haita
-    D[...] --> Haita
-    Haita --> HTML
-    Haita --> PDF
+    T[Typst Content]
+    Mermaid -- merman --> T
+    Markdown -- cmarker --> T
+    LaTeX -- mitex --> T
+    D[...] --> T
+    T -- Haita --> HTML
+    T -- Haita --> PDF
     ```.text,
   )
 })
+
+#readme-fragment-1
 
 #figure(
   caption: [A math formula example (#link(
@@ -73,6 +72,15 @@ Welcome to the documentation for Haita #version (hǎi tǎ, Mandarin Pinyin, lit.
     italic(W) = (Psi'^2 a b)/(2 mu_0) [
       mu^2 + sum_(m,n) ((a^2_(m n))/4 ((m^2 n^2)/a^2 + (n^2 pi^2)/b^2 + mu^2) + (8 a_(m n) mu^2)/(pi^2 m n) )
     ]
+  $,
+)
+
+#figure(
+  caption: [See how it renders with Typst + MathML (#link(
+      "https://katex.org/",
+    )[source])],
+  $
+    f(x) = integral^oo_oo hat(f)(xi)e^(2pi i xi x) dif xi
   $,
 )
 
