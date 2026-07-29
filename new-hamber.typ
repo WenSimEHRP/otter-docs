@@ -17,7 +17,7 @@
       html.elem(
         child.tag,
         attrs: child.attrs,
-        inline-svg(child.children)
+        inline-svg(child.children),
       )
     }
   }
@@ -163,7 +163,7 @@
   })
   // fix math scrolling
   show math.equation.where(block: true).or(frame): div.with(
-    class: "overflow-x-auto w-full overflow-y-hidden [&>:first-child]:mx-auto"
+    class: "overflow-x-auto w-full overflow-y-hidden [&>:first-child]:mx-auto",
   )
 
   // add some custom display rules and add line counting
@@ -173,51 +173,55 @@
       attrs: if it.lang != none { (data-lang: it.lang) } else { (:) },
     )
     div(class: "relative group", {
-      elem("button", attrs: (
-        class: {
-          "absolute right-2 top-2 p-1 z-10 not-prose"
-          " text-md" // controls the icon size
-          " border border-neutral-300 bg-white text-neutral-600"
-          " opacity-0 group-hover:opacity-100 transition-opacity"
-          " hover:bg-neutral-100"
-          " dark:border-transparent dark:bg-zinc-800 dark:text-neutral-300 dark:hover:bg-zinc-700"
+      elem(
+        "button",
+        attrs: (
+          class: {
+            "absolute right-2 top-2 p-1 z-10 not-prose"
+            " text-md" // controls the icon size
+            " border border-neutral-300 bg-white text-neutral-600"
+            " opacity-0 group-hover:opacity-100 transition-opacity"
+            " hover:bg-neutral-100"
+            " dark:border-transparent dark:bg-zinc-800 dark:text-neutral-300 dark:hover:bg-zinc-700"
+          },
+          onclick: ```js
+          const text = this.nextElementSibling.querySelector('code').textContent;
+
+          const done = () => {
+            const clipboard = this.querySelector('.clipboard');
+            const check = this.querySelector('.check');
+
+            clipboard.classList.add('hidden');
+            check.classList.remove('hidden');
+
+            setTimeout(() => {
+              clipboard.classList.remove('hidden');
+              check.classList.add('hidden');
+            }, 2000);
+          };
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(done).catch(console.error);
+          } else {
+            const input = document.createElement('textarea');
+            input.value = text;
+            input.style.position = 'fixed';
+            input.style.top = '0';
+            input.style.left = '0';
+            input.style.opacity = '0';
+            input.setAttribute('readonly', '');
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            done();
+          }
+          ```.text,
+        ),
+        {
+          div(class: "clipboard", inline-svg(xml("assets/clipboard.svg")))
+          div(class: "check hidden", inline-svg(xml("assets/check.svg")))
         },
-        onclick: ```js
-        const text = this.nextElementSibling.querySelector('code').textContent;
-
-        const done = () => {
-          const clipboard = this.querySelector('.clipboard');
-          const check = this.querySelector('.check');
-
-          clipboard.classList.add('hidden');
-          check.classList.remove('hidden');
-
-          setTimeout(() => {
-            clipboard.classList.remove('hidden');
-            check.classList.add('hidden');
-          }, 2000);
-        };
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(text).then(done).catch(console.error);
-        } else {
-          const input = document.createElement('textarea');
-          input.value = text;
-          input.style.position = 'fixed';
-          input.style.top = '0';
-          input.style.left = '0';
-          input.style.opacity = '0';
-          input.setAttribute('readonly', '');
-          document.body.appendChild(input);
-          input.select();
-          document.execCommand('copy');
-          document.body.removeChild(input);
-          done();
-        }
-        ```.text,
-      ), {
-        div(class: "clipboard", inline-svg(xml("assets/clipboard.svg")))
-        div(class: "check hidden", inline-svg(xml("assets/check.svg")))
-      })
+      )
       pre(code-fn(for line in it.lines {
         span(class: "line", line)
         linebreak()
@@ -225,7 +229,8 @@
     })
   }
 
-  input(class: {
+  input(
+    class: {
       "z-10 fixed md:hidden"
       " peer appearance-none"
       " left-0 w-8 h-20"
@@ -267,7 +272,7 @@
         class: {
           "border-neutral-300 dark:border-transparent overflow-x-auto "
           {
-            "block border-y px-2 py-1"
+            "block border-y px-2 py-1 transition-shadow"
             " border-neutral-300 bg-white"
             " dark:border-transparent dark:bg-zinc-700"
           }
