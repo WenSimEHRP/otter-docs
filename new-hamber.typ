@@ -163,12 +163,11 @@
   })
   // fix math scrolling
   let div-fn = div.with(class: "overflow-x-auto w-full overflow-y-hidden [&>:first-child]:mx-auto py-1")
-  show math.equation.where(block: true): it => if target() == "html" {
+  show math.equation.where(block: true).or(frame): it => if target() == "html" {
     div-fn(it)
   } else {
     it
   }
-  show frame: div-fn
 
   // add some custom display rules and add line counting
   show raw.where(block: true): it => {
