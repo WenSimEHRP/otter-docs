@@ -135,6 +135,23 @@
   },
 )
 
+#let copy-btn(copy-class) = html.button(
+  title: "Copy",
+  class: {
+    copy-class
+    " absolute right-2 top-2 p-1 z-10 not-prose"
+    " text-md" // controls the icon size
+    " border border-neutral-300 bg-white text-neutral-600"
+    " opacity-0 group-hover:opacity-100 transition-opacity"
+    " hover:bg-neutral-100"
+    " dark:border-transparent dark:bg-zinc-800 dark:text-neutral-300 dark:hover:bg-zinc-700"
+  },
+  {
+    html.div(class: "clipboard", inline-svg(xml("assets/clipboard.svg")))
+    html.div(class: "check hidden", inline-svg(xml("assets/check.svg")))
+  },
+)
+
 #let internal-html-renderer(
   final-tree,
   it,
@@ -169,63 +186,23 @@
     it
   }
 
-  // add some custom display rules and add line counting
-  show raw.where(block: true): it => {
+  show raw.where(block: true): it => if target() != "html" {
+    it
+  } else if it.lang == "typm-copy" {
+    // copy math
+    div(class: "relative group", title: it.text, {
+      copy-btn("copy-math-btn")
+      // the div here is to prevent Typst from creating a p for the copy-btn
+      div(math.equation(block: true, eval(it.text, mode: "math")))
+    })
+  } else {
+    // add some custom display rules and add line counting
     let code-fn = elem.with(
       "code",
       attrs: if it.lang != none { (data-lang: it.lang) } else { (:) },
     )
     div(class: "relative group", {
-      elem(
-        "button",
-        attrs: (
-          title: "Copy code",
-          class: {
-            "absolute right-2 top-2 p-1 z-10 not-prose"
-            " text-md" // controls the icon size
-            " border border-neutral-300 bg-white text-neutral-600"
-            " opacity-0 group-hover:opacity-100 transition-opacity"
-            " hover:bg-neutral-100"
-            " dark:border-transparent dark:bg-zinc-800 dark:text-neutral-300 dark:hover:bg-zinc-700"
-          },
-          onclick: ```js
-          const text = this.nextElementSibling.querySelector('code').textContent;
-
-          const done = () => {
-            const clipboard = this.querySelector('.clipboard');
-            const check = this.querySelector('.check');
-
-            clipboard.classList.add('hidden');
-            check.classList.remove('hidden');
-
-            setTimeout(() => {
-              clipboard.classList.remove('hidden');
-              check.classList.add('hidden');
-            }, 2000);
-          };
-          if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(done).catch(console.error);
-          } else {
-            const input = document.createElement('textarea');
-            input.value = text;
-            input.style.position = 'fixed';
-            input.style.top = '0';
-            input.style.left = '0';
-            input.style.opacity = '0';
-            input.setAttribute('readonly', '');
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-            done();
-          }
-          ```.text,
-        ),
-        {
-          div(class: "clipboard", inline-svg(xml("assets/clipboard.svg")))
-          div(class: "check hidden", inline-svg(xml("assets/check.svg")))
-        },
-      )
+      copy-btn("copy-code-btn")
       pre(code-fn(for line in it.lines {
         span(class: "line", line)
         linebreak()
@@ -467,6 +444,7 @@
         font-css
       },
     ) <styles>
+    #asset("/scripts/copy.js", read("scripts/copy.js")) <copy-js>
   ]
   // then generate html files
   show html.elem: update-elem.with(state: page-classes)
@@ -493,6 +471,7 @@
           meta(name: "description", content: "...")
           // Styles
           realize(<styles>, href => link(rel: "stylesheet", href: href))
+          realize(<copy-js>, href => script(src: href, defer: true))
           extra-head-content
           // Open Graph SEO
           import "lib.typ": to-string

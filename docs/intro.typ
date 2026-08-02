@@ -68,20 +68,20 @@ Welcome to the documentation for Haita #version (hǎi tǎ, Mandarin Pinyin, lit.
   caption: [A math formula example (#link(
       "https://tex.stackexchange.com/questions/176443/large-equation-goes-out-of-margin-want-to-centre-it",
     )[source])],
-  $
-    italic(W) = (Psi'^2 a b)/(2 mu_0) [
-      mu^2 + sum_(m,n) ((a^2_(m n))/4 ((m^2 n^2)/a^2 + (n^2 pi^2)/b^2 + mu^2) + (8 a_(m n) mu^2)/(pi^2 m n) )
-    ]
-  $,
+  ```typm-copy
+  italic(W) = (Psi'^2 a b)/(2 mu_0) [
+    mu^2 + sum_(m,n) ((a^2_(m n))/4 ((m^2 n^2)/a^2 + (n^2 pi^2)/b^2 + mu^2) + (8 a_(m n) mu^2)/(pi^2 m n) )
+  ]
+  ```,
 )
 
 #figure(
   caption: [See how it renders with Typst + MathML (#link(
       "https://katex.org/",
     )[source])],
-  $
-    f(x) = integral^oo_oo hat(f)(xi)e^(2pi i xi x) dif xi
-  $,
+  ```typm-copy
+  f(x) = integral^oo_oo hat(f)(xi)e^(2pi i xi x) dif xi
+  ```,
 )
 
 The default theme, _New Hamber_, also supports dark mode.
