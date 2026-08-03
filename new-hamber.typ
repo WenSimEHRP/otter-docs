@@ -412,6 +412,9 @@
       src: "https://upload.wikimedia.org/wikipedia/commons/0/02/Sea_Otter_%28Enhydra_lutris%29_%2825169790524%29_crop.jpg",
     ),
   ),
+  /// The favicon of the site. Currently only SVG is supported.
+  /// -> content | none
+  favicon: asset("favicon.svg", read("assets/favicon.svg")),
   /// Whether or not to enable #link(<pagefind-integration>)[pagefind integration]
   /// -> bool
   pagefind-enabled: false,
@@ -423,6 +426,10 @@
   import "fonts/fonts.typ": font-css, font-files
   font-files().join()
   [
+    #asset("/scripts/copy.js", read("scripts/copy.js")) <copy-js>
+    #if favicon != none [
+      #favicon <favicon-svg>
+    ]
     #asset(
       "/styles.css",
       {
@@ -444,7 +451,6 @@
         font-css
       },
     ) <styles>
-    #asset("/scripts/copy.js", read("scripts/copy.js")) <copy-js>
   ]
   // then generate html files
   show html.elem: update-elem.with(state: page-classes)
@@ -470,6 +476,9 @@
           // TODO: finish description here
           meta(name: "description", content: "...")
           // Styles
+          if favicon != none {
+            realize(<favicon-svg>, href => link(rel: "icon", href: href, type: "image/svg+xml"))
+          }
           realize(<styles>, href => link(rel: "stylesheet", href: href))
           realize(<copy-js>, href => script(src: href, defer: true))
           extra-head-content
