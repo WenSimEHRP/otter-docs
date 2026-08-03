@@ -1,3 +1,4 @@
 .direnv
 dist/
 release/
+doc.pdf

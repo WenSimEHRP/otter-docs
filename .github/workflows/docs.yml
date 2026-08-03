@@ -28,7 +28,7 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Build docs
-        run: nix develop .#default --command time just index
+        run: nix develop .#default --command time just full-docs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

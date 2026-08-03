@@ -3,6 +3,10 @@
 
 Welcome to the documentation for Haita #version (hǎi tǎ, Mandarin Pinyin, lit. Sea Otter).
 
+#info[PDF Ready!][
+  The documentation is also available in #link("./doc.pdf")[PDF format].
+]
+
 #warning[It's not ready yet!][
   Haita is a decent choice for organizing long, comprehensive documentation. But just like Typst, Haita is an unfinished
   project, and is (currently) not a serious tool.

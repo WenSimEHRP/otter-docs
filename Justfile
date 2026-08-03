@@ -8,9 +8,17 @@ default:
 build:
     ./dist.typ
 
+# build the PDF documentation
+build-pdf:
+    typst compile --features bundle,html --format pdf ./dist.typ doc.pdf
+
 # index the site
 index: build
     pagefind --site ./dist --output-subdir pagefind
+
+# build the full docs
+full-docs: index build-pdf
+    mv doc.pdf dist/
 
 # watch build output
 watch:
