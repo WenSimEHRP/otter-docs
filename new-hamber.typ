@@ -535,14 +535,18 @@
   ]
   #set heading(offset: 1, numbering: "1.")
   #set text(font: "Lato")
-  #show raw.where(block: true): it => box(width: 1fr, fill: luma(98%), inset: .8em, grid(
-    columns: (auto, 1fr),
-    row-gutter: par.leading,
-    column-gutter: 1em,
-    ..for line in it.lines {
-      (grid.cell(align: right)[#line.number], grid.cell(align: left, line.body))
-    }
-  ))
+  #show raw.where(block: true): it => if it.lang == "typm-code" {
+    math.equation(block: true, eval(it.text, mode: "math"))
+  } else {
+    box(width: 1fr, fill: luma(98%), inset: .8em, grid(
+      columns: (auto, 1fr),
+      row-gutter: par.leading,
+      column-gutter: 1em,
+      ..for line in it.lines {
+        (grid.cell(align: right)[#line.number], grid.cell(align: left, line.body))
+      }
+    ))
+  }
   #set par(justify: true, justification-limits: (
     tracking: (min: -0.01em, max: 0.02em),
   ))
