@@ -48,13 +48,6 @@
     offset-chapter("demo", children: (
       offset-chapter("demo-code"),
     )),
-    chapter(
-      "changelog",
-      content: title[Changelog]
-        + cmarker.render(
-          label-prefix: "changelog-",
-          read("CHANGELOG.md"),
-        ),
-    ),
+    chapter("changelog", content: include "CHANGELOG.typ"),
   ),
 )

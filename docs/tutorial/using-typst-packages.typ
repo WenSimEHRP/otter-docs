@@ -1,7 +1,7 @@
 #import "../mod.typ": *
 #title[Using Other Typst Packages]
 
-You can add any Typst pacakges into your document using the package import syntax:
+You can add any Typst packages into your document using the package import syntax:
 
 ```typ
 #import "@preview/my-package:version": foo, bar

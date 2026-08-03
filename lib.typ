@@ -27,7 +27,7 @@
     kind: "chapter",
     path: path,
     content: if content == auto {
-      include path.join("/") + ".typ"
+      include "/" + path.join("/") + ".typ"
     } else {
       content
     },
