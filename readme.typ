@@ -16,7 +16,8 @@
     - Fast compliation
     - Native support for `watch` and `serve`
     - PDF and HTML generation from the same source #footnote[
-        PDF generation is currently suspended. See #link("https://github.com/typst/typst/issues/8309") for details.
+        PDF generation only works when using `--foramt pdf` and does not work with `--format` bundle. See
+        #link("https://github.com/typst/typst/issues/8309") for details.
       ]
     - HTML minification.
   - Minimal client side JS by default (for copying code). No JS required for math blocks. Site fully usable and

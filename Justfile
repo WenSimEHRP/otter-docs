@@ -16,6 +16,10 @@ index: build
 watch:
     typst watch --features bundle,html --format bundle ./dist.typ ./dist --pretty
 
+# watch build PDF output
+watch-pdf:
+    typst watch --features bundle,html --format pdf ./dist.typ doc.pdf
+
 # build the readme using pandoc
 build-readme:
     nix develop .#prepareRelease --command pandoc ./readme.typ -o README.md

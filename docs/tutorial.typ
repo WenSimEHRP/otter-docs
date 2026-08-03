@@ -1,4 +1,4 @@
-#title[Tutorial]
+#title[Tutorial] <tutorial>
 
 Haita uses Typst. If you are not familiar with Typst, you can first take a look at #link(
   "https://typst.app/docs/tutorial",
@@ -35,10 +35,15 @@ normal Typst document.
 
 == Developing (Typst Web App)
 
-_The `typst.app` web app currently does not support the bundle target and MathML exports. This section will be completed
-once the web app adds support for the bundle target._
+_The `typst.app` web app currently does not support the bundle target and MathML exports. Bundle export would not work
+in the Web App._
+
+https://typst.app is an online Typst editor developed by the Typst team.
+// TODO: add PDF part
 
 == Developing (Local machine)
+
+=== Bundle (HTML) Export
 
 Open a terminal on your device. In the terminal, type the following command, then press `return`:
 
@@ -77,14 +82,31 @@ browser, and paste that line in the address bar.
 
 You will see your document's index page in your browser.
 
-```sh typst watch``` is very fast. This is because Typst uses #link(
+=== PDF Export
+
+You can export your entire document as a PDF using the following command:
+
+```sh
+typst compile --features bundle,html --format pdf dist.typ
+```
+
+This would generate a file named `dist.pdf` which you can open in your PDF viewer. Similarly, you can also watch the PDF
+output:
+
+```sh
+typst watch --features bundle,html --format pdf dist.typ
+```
+
+Instead of opening a local development server, Typst writes into the PDF file every time you modify the `.typ` source.
+
+```sh typst watch``` is very fast for both PDF and HTML output. This is because Typst uses #link(
   "https://github.com/typst/typst/blob/main/docs/dev/architecture.md",
 )[incremental compilation] for recompilations.
 
 = Architecture
 
-The documentation system has two parts: the organizer, which is the #link(<haita-book>)[`book` function], and the
-renderer.
+The documentation system has two parts: the organizer, which is the #link(label("haita-book()"))[`book` function], and
+the renderer.
 
 The `book` function will organize the content into a tree, and that tree is then fed into the renderer. The renderer
 will take a tree, inspect it, then generate pages based on that tree. This means that writing your own renderer is

@@ -326,7 +326,13 @@
           emph[This page does not contain any headings.]
         } else {
           for label in it.headings {
-            li(std.link(label, query(label).at(0).body))
+            let query-result = query(label).first()
+            let body = if query-result.func() == metadata {
+              query-result.value.body
+            } else if query-result.func() == heading {
+              query-result.body
+            }
+            li(std.link(label, body))
           }
         },
       )
@@ -387,10 +393,15 @@
 
 /// _New Hamber_'s HTML renderer.
 #let html-renderer(
+  /// The content tree
   tree,
+  /// The language of the book
   lang: "en",
+  /// The title of the book
   title: "",
+  /// The base URL
   base-url: none,
+  /// The summary image renderer
   summary-image-renderer: none,
   /// The footer is displayed on each page. Controls the footer's content.
   /// -> content
@@ -519,7 +530,33 @@
 
 
 #let paged-renderer(tree, ..args) = [
-  #document("/doc.pdf", for it in flatten-tree(tree) {
+  #show title: t => page[
+    #heading(level: 1, t.body)
+  ]
+  #set heading(offset: 1, numbering: "1.")
+  #set text(font: "Lato")
+  #show raw.where(block: true): it => box(width: 1fr, fill: luma(98%), inset: .8em, grid(
+    columns: (auto, 1fr),
+    row-gutter: par.leading,
+    column-gutter: 1em,
+    ..for line in it.lines {
+      (grid.cell(align: right)[#line.number], grid.cell(align: left, line.body))
+    }
+  ))
+  #set par(justify: true, justification-limits: (
+    tracking: (min: -0.01em, max: 0.02em),
+  ))
+  #show link: underline.with(offset: .2em, stroke: 1.3pt)
+  #show link: it => if type(it.dest) == label {
+    let sup = numbering("1.", ..counter(heading).at(it.dest))
+    it
+    super(sup)
+  } else {
+    it
+  }
+  #show math.equation: set text(font: "Lete Sans Math")
+  #outline(depth: 2)
+  #for it in flatten-tree(tree).filter(it => it.kind == "chapter") {
     it.content
-  }) <doc.pdf>
+  }
 ]
