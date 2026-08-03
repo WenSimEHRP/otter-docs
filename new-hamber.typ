@@ -506,11 +506,10 @@
         })
         body(class: "dark:bg-zinc-900", {
           if pagefind-enabled {
-            // these two elements must stay adjacent
             elem("pagefind-config")
             elem("script", {
-              "document.currentScript.previousElementSibling.setAttribute("
-              "\"bundle-path\", new URL(\"" + pagefind-path + "/\", document.baseURI).pathname)"
+              "document.querySelector('pagefind-config').setAttribute("
+              "'bundle-path', new URL('" + pagefind-path + "/', document.baseURI).pathname)"
             })
           }
           internal-html-renderer(
