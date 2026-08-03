@@ -96,3 +96,55 @@ work when using PDF export.
 ] else [
   You are currently looking at the PDF target.
 ]
+
+= Copyable Math Blocks
+
+Haita provides an extension to standard Typst to make math blocks copyable as Typst source. This extension only works
+for math blocks, and does not work for inline math such as $a^2 + b^2 = c^2$. Typically, math blocks are written as
+follows:
+
+#let math-sample = ```typm-copy
+f(x) = integral^oo_oo hat(f)(xi)e^(2pi i xi x) dif xi
+```
+
+#raw(block: true, lang: "typ", {
+  "$\n  "
+  math-sample.text
+  "\n$"
+})
+
+This will be rendered as follows. Notice how the math block's source cannot be copied:
+
+#math.equation(block: true, eval(math-sample.text, mode: "math"))
+
+Instead, you can remove the ```typ $ $``` and wrap your text in the `typm-copy` code block. Haita will extract the text
+from the code block, evaluate it, and render a math block with a copy button. Additionally, you can also hover on the
+math block to reveal a tooltip for the Typst source:
+
+#raw(block: true, lang: "typ", {
+  "```typm-copy\n"
+  math-sample.text
+  "\n```"
+})
+
+#math-sample
+
+Note that writing inside raw blocks won't give you LSP completions. In this case, you can first write the math formula
+in a standard ```typc $ $```, then remove the dollar sign and wrap it in the code block. You may not reference any
+outside variables when writing in this way. For example, the following snippet would not work at all since the math
+block relies on a method that is not defined in Typst's standard library:
+
+#let borked-sample = ``````typ
+#let my-method(foo) = math.attach(foo, tr: foo)
+// this works
+$
+  #my-method[8848.86]
+$
+// but this is borked
+// ```typm-copy
+// #my-method[8848.86]
+// ```
+``````
+
+#borked-sample
+#eval(borked-sample.text, mode: "markup")
