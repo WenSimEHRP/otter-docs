@@ -12,9 +12,7 @@ If you've used a tool like #link("https://myriad-dreamin.github.io/shiroa/")[Shi
 organize the book. In Haita, all of that is concentrated to a single entrypoint -- the `book` function. To get started,
 create a file named `dist.typ` that contains the following:
 
-#import "../readme.typ": sample
-
-#raw(block: true, lang: "typ", sample)
+#raw(block: true, lang: "typ", read("/template/main.typ"))
 
 Each chapter should start with a #link("https://typst.app/docs/reference/model/title/")[`title`]. The title of the page
 will also be displayed in the summary. Do not start your document with a level 1 heading that looks like this:

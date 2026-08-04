@@ -528,38 +528,96 @@
   )
 }
 
-
-#let paged-renderer(tree, ..args) = [
-  #show title: t => page[
-    #heading(level: 1, t.body)
-  ]
+/// _New Hamber_'s Paged (PDF, PNG, SVG) renderer.
+#let paged-renderer(
+  tree,
+  /// The title of the documentation
+  /// -> str
+  title: "",
+  /// A brief explanation about the document
+  /// -> content
+  description: [],
+  /// The author(s) of the document
+  /// -> array
+  authors: (),
+  /// The language of the document.
+  /// -> str
+  lang: "en",
+  /// The date format used
+  date-format: auto,
+  ..args,
+) = [
+  #set text(font: "Lato", lang: if lang == auto { "en" } else { lang })
+  #show math.equation: set text(font: "Lete Sans Math")
+  #set document(author: authors)
+  #page(align(right + horizon)[
+    #block(below: 1em, text(size: 32pt, strong(title)))
+    #set text(size: 15pt)
+    #description
+    #v(2em)
+    #authors.join[, ]\
+    #datetime.today().display(date-format)
+  ])
+  // empty page for alignment
+  #page[]
+  #show std.title: t => {
+    pagebreak(weak: true)
+    hide(text(size: 0cm, heading(level: 1, t.body)))
+    box(inset: (bottom: 2em), width: 1fr, align(right)[
+      #text(size: 14pt)[Chapter #numbering("1", counter(heading).get().first() + 1)]\
+      #text(size: 32pt, t.body)
+    ])
+  }
   #set heading(offset: 1, numbering: "1.")
-  #set text(font: "Lato")
-  #show raw.where(block: true): it => if it.lang == "typm-code" {
+  #show raw.where(block: true): it => if it.lang == "typm-copy" {
     math.equation(block: true, eval(it.text, mode: "math"))
   } else {
-    box(width: 1fr, fill: luma(98%), inset: .8em, grid(
+    grid(
       columns: (auto, 1fr),
-      row-gutter: par.leading,
-      column-gutter: 1em,
+      fill: luma(98%),
+      inset: (x: .5em, y: .3em),
+      grid.header[][],
       ..for line in it.lines {
-        (grid.cell(align: right)[#line.number], grid.cell(align: left, line.body))
-      }
-    ))
+        (
+          grid.cell(align: right, [#line.number]),
+          grid.cell(align: left, line.body),
+        )
+      },
+      grid.footer[][],
+    )
   }
-  #set par(justify: true, justification-limits: (
-    tracking: (min: -0.01em, max: 0.02em),
-  ))
+  #set par(justify: true, justification-limits: (tracking: (min: -0.01em, max: 0.02em)))
   #show link: underline.with(offset: .2em, stroke: 1.3pt)
-  #show link: it => if type(it.dest) == label {
-    let sup = numbering("1.", ..counter(heading).at(it.dest))
-    it
-    super(sup)
-  } else {
+  #show link: it => if type(it.dest) == label [
+    #it #super(numbering("1.", ..counter(heading).at(it.dest)))
+  ] else {
     it
   }
-  #show math.equation: set text(font: "Lete Sans Math")
+  #set page(
+    footer: context box(inset: (y: .5em), stroke: (top: .6pt), {
+      let pagenum = counter(page).get().first()
+      let page-numbering = numbering(page.numbering, pagenum)
+      let current-heading = query(selector(heading.where(level: 1)).before(here())).last(default: none)
+      let current-numbering = counter(heading).get().first()
+      let current-heading = if current-heading == none { none } else {
+        numbering("1.", current-numbering) + [ ]
+        current-heading.body
+      }
+      if calc.even(pagenum) {
+        page-numbering
+        h(1fr)
+        upper(strong(current-heading))
+      } else {
+        upper(strong(current-heading))
+        h(1fr)
+        page-numbering
+      }
+    }),
+  )
+  #counter(page).update(1)
+  #set page(numbering: "i")
   #outline(depth: 2)
+  #set page(numbering: "1")
   #for it in flatten-tree(tree).filter(it => it.kind == "chapter") {
     it.content
   }

@@ -160,6 +160,7 @@
   if target() in ("paged",) {
     paged-renderer(
       normalized,
+      title: title,
       description: description,
       authors: authors,
       lang: lang,
