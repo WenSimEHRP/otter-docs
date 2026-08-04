@@ -81,7 +81,7 @@
       let chapter-title-state = state(path-str + " title state", none)
       it.content = {
         // add the HTML id for the heading
-        show heading.where(level: 1): head => {
+        show heading.where(level: 1, outlined: true): head => {
           if "label" in head.fields() {
             chapter-heading-state.update(arr => arr + (head.label,))
             head
