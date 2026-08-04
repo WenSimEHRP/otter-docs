@@ -11,3 +11,8 @@ keywords = ["html", "web", "mdbook", "documentation"]
 categories = ["components", "model", "utility"]
 # requires bundle export
 compiler = "0.15.0"
+
+[template]
+path = "template"
+entrypoint = "main.typ"
+thumbnail = "thumbnail.png"
