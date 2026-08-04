@@ -1,4 +1,4 @@
-name: Build Template
+name: Test compilation
 
 on:
   push:
