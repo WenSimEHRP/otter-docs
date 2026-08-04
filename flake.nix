@@ -19,12 +19,15 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          packages = [
-            pkgs.typst
-            pkgs.pagefind
-            pkgs.just
-            pkgs.ripgrep
+          packages = with pkgs; [
+            typst
+            pagefind
+            just
+            ripgrep
           ];
+          shellHook = ''
+            unset SOURCE_DATE_EPOCH
+          '';
         };
         # for converting Typst to Markdown
         devShells.prepareRelease = pkgs.mkShell {
