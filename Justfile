@@ -47,3 +47,8 @@ install-release: make-release
     rm -rf          ~/.local/share/typst/packages/local/haita/{{ package-version }}
     mkdir -p        ~/.local/share/typst/packages/local/haita/{{ package-version }}
     cp -r release/* ~/.local/share/typst/packages/local/haita/{{ package-version }}
+
+# test if the package works
+test: full-docs
+    cd template && ./main.typ
+    cd template && typst compile --features bundle,html --format pdf main.typ /dev/null
