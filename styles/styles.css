@@ -26,7 +26,3 @@ figure > div > pre,
 figure > p {
     margin-bottom: 0.85em !important;
 }
-
-#haita-main-content {
-    overflow-wrap: break-word;
-}

@@ -290,6 +290,7 @@
         " prose-pre:rounded-none"
         " prose-a:decoration-1 prose-a:underline-offset-4"
         " prose-a:hover:decoration-3"
+        " prose-a:break-words"
       },
       data-pagefind-body: "",
     ),
