@@ -58,7 +58,7 @@ According to GitHub, Typst was the second fastest-growing programming language b
 == Headings
 
 #for i in range(4) {
-  heading(level: i + 1, [Heading #(i + 1)], outlined: false)
+  heading(level: i + 1, [Heading #(i + 1)], outlined: false, numbering: none)
 }
 
 Note that these headings are not outlined, so they would not appear on the sidebar.
@@ -187,6 +187,7 @@ Numbered list:
 #table(
   columns: (2em,) * 10,
   rows: (2em,) * 10,
+  align: center + horizon,
   ..range(100)
     .map(it => it + 1)
     .map(n => if is-prime(n) { table.cell(fill: yellow, highlight(fill: yellow)[#n]) } else { [#n] })

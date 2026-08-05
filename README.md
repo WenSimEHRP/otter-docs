@@ -1,4 +1,4 @@
-![Haita with the default theme New Hamber](https://raw.githubusercontent.com/wensimehrp/haita/b24160ce08dbb336096585db2e8d7cc2a23cabc5/demo.avif)
+![Haita with the default theme New Hamber](https://raw.githubusercontent.com/wensimehrp/haita/0c6248d412416db04b466a68e2579ca5911c22cf/demo.avif)
 
 # Haita
 
@@ -90,5 +90,6 @@ when compiling the documents.
 The source and the documentation are available under [Apache License
 v2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
-[^1]: PDF generation is currently suspended. See
+[^1]: PDF generation only works when using `--foramt pdf` and does not
+    work with `--format` bundle. See
     <https://github.com/typst/typst/issues/8309> for details.

@@ -1,5 +1,5 @@
 /// This function defines a chapter in the output
-/// ```example
+/// ```
 /// #chapter("doc/lib.typ")
 /// ```
 /// -> chapter
@@ -80,13 +80,21 @@
       let chapter-heading-state = state(path-str + " chapter state", ())
       let chapter-title-state = state(path-str + " title state", none)
       it.content = {
+        // add the HTML id for the heading
         show heading.where(level: 1, outlined: true): head => {
           if "label" in head.fields() {
             chapter-heading-state.update(arr => arr + (head.label,))
             head
           } else {
-            let key = lower(path-str + to-string(head).replace(" ", "-"))
-            [#heading(head.body) #label(key)]
+            let heading-text = lower(to-string(head).replace(" ", "-"))
+            let lb = label(path-str + "__HAITA_INTERNAL__" + heading-text)
+            [#metadata((
+                id: heading-text,
+                body: head.body,
+              )) #lb]
+            chapter-heading-state.update(arr => arr + (lb,))
+            // TODO set ID in HTML in this case. ID should not be resolved by the renderer
+            head
           }
         }
         show title: title => {
@@ -125,11 +133,6 @@
   /// that SEO metadata requires (the canonical link, Open Graph and Twitter cards).
   /// -> none | str
   base-url: none,
-  /// Whether or not to render the summary images. Summary images are displayed
-  /// when pasting pages' link in various social media, such as Telegram, Discord,
-  /// and X.
-  /// -> bool
-  render-summary-image: true,
   /// The authors of the documentation. It should be an array of strings.
   /// -> array
   authors: (),
@@ -138,53 +141,50 @@
   lang: "en",
   /// Which HTML renderer to use. By default it uses _New Hamber_'s html renderer.
   /// -> function
-  html-renderer: (..args) => new-hamber.html-renderer.with(
-    summary-image-renderer: if args.named().render-summary-image {
-      new-hamber.summary-image-renderer.with(args.named().title)
-    } else {
-      none
-    },
-  )(..args),
+  html-renderer: new-hamber.html-renderer,
   /// Which paged (PDF, PNG, SVG) renderer to use. By default it uses
   /// _New Hamber_'s paged renderer.
   /// -> function
   paged-renderer: new-hamber.paged-renderer,
-  /// Whether to enable the debug mode or not.
+  /// Whether to enable the debug mode or not. Debug mode outputs a tree of the current document at `/__debug_tree.html`
   /// -> bool
   debug: false,
   /// The content of your documentation.
   /// -> array
   tree: (),
-  /// Extra arguments that are passed to the renderers.
-  /// -> any
-  ..args,
 ) = context {
   let base-url = normalize-base-url(base-url)
   assert(type(authors) == array, message: "Authors must be an array of strings.")
   let normalized = normalize-tree(tree)
-  // debug for testing the tree
-  if debug { document("/__debug_tree.html", [#normalized]) }
+  // Bundle export will not output PDF until https://github.com/typst/typst/issues/7998 is resolved
   if target() in ("paged",) {
-    panic("Paged export is suspended until https://github.com/typst/typst/issues/7998 is resolved")
-    // paged-renderer(
-    //   normalized,
-    //   description: description,
-    //   authors: authors,
-    //   lang: lang,
-    //   ..args,
-    // )
+    paged-renderer(
+      normalized,
+      title: title,
+      description: description,
+      authors: authors,
+      lang: lang,
+    )
   }
   if target() in ("bundle",) {
+    // debug for testing the tree
+    if debug { document("/__debug_tree.html", [#normalized]) }
     html-renderer(
       normalized,
       title: title,
       description: description,
       base-url: base-url,
-      render-summary-image: render-summary-image,
       authors: authors,
       lang: lang,
-      ..args,
     )
+  }
+  if target() == "html" {
+    panic({
+      "You must use the bundle target."
+      " You are seeing this error either because you put `book` inside a #document in when using bundle format"
+      " or you set the format to be HTML."
+      " You must use the bundle target and you should not place book inside a #document."
+    })
   }
 }
 

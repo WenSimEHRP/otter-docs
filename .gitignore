@@ -1,3 +1,5 @@
 .direnv
 dist/
 release/
+doc.pdf
+template/main/

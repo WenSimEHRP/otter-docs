@@ -10,10 +10,13 @@
 
 #import "@preview/frame-it:2.0.0": *
 #show: frame-style(styles.thmbox)
+#let project-config = toml("./typst.toml")
 
 #book(
   debug: true,
-  title: "Haita Docs Documentation",
+  title: "Haita Documentation",
+  description: project-config.package.description + " in pure Typst",
+  authors: project-config.package.authors.map(s => s.replace(regex("<[^>]*>"), "").trim()),
   base-url: "https://wensimehrp.github.io/haita",
   html-renderer: new-hamber.html-renderer.with(
     pagefind-enabled: true,

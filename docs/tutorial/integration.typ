@@ -127,6 +127,5 @@ left hand side.
   )[then compiling it]. In this case, you would have to write the glue yourself.
 ] else [
   JS embedding would be demonstrated in the Web version. PDFs do support JavaScript; however, the support is extremely
-  limited, and many PDF viewers would omit the JavaScript inside PDFs. See #link(<page:integration>)[the web version]
-  for details.
+  limited, and many PDF viewers would omit the JavaScript inside PDFs.
 ]

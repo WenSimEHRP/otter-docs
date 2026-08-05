@@ -1,0 +1,15 @@
+name: Test compilation
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: DeterminateSystems/nix-installer-action@v20
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+      - name: Test template compilation
+        run: nix develop .#default --command time just test

@@ -1,5 +1,7 @@
 #title[Changelog]
 
+#set heading(numbering: none)
+
 #let gh-issue(num) = link(
   "https://github.com/wensimehrp/haita/issues/" + str(num),
   "#" + str(num),

@@ -20,10 +20,20 @@ References for functions and methods in Haita.
   html.span(class: "py-[2px] px-[4px] mr-1 rounded-sm font-mono text-sm font-normal " + c, ty)
 }
 
-#for module in (haita, new-hamber) {
+#context for module in (haita, new-hamber) {
+  set heading(numbering: none)
+  if target() == "paged" {
+    tidy.show-module(
+      module,
+      style: tidy.styles.default,
+    )
+    continue
+  }
   divider()
   for func-def in module.functions {
-    [#heading(level: 1, html.span(class: "font-mono", func-def.name)) #label(module.label-prefix + func-def.name)]
+    [#heading(level: 1, html.span(class: "font-mono", func-def.name)) #label(
+        module.label-prefix + func-def.name + "()",
+      )]
 
     eval(func-def.description, mode: "markup")
 

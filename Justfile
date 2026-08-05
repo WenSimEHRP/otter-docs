@@ -8,13 +8,25 @@ default:
 build:
     ./dist.typ
 
+# build the PDF documentation
+build-pdf:
+    typst compile --features bundle,html --format pdf ./dist.typ doc.pdf
+
 # index the site
 index: build
     pagefind --site ./dist --output-subdir pagefind
 
+# build the full docs
+full-docs: index build-pdf
+    mv doc.pdf dist/
+
 # watch build output
 watch:
     typst watch --features bundle,html --format bundle ./dist.typ ./dist --pretty
+
+# watch build PDF output
+watch-pdf:
+    typst watch --features bundle,html --format pdf ./dist.typ doc.pdf
 
 # build the readme using pandoc
 build-readme:
@@ -35,3 +47,8 @@ install-release: make-release
     rm -rf          ~/.local/share/typst/packages/local/haita/{{ package-version }}
     mkdir -p        ~/.local/share/typst/packages/local/haita/{{ package-version }}
     cp -r release/* ~/.local/share/typst/packages/local/haita/{{ package-version }}
+
+# test if the package works
+test: full-docs
+    cd template && ./main.typ
+    cd template && typst compile --features bundle,html --format pdf main.typ /dev/null
