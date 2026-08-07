@@ -2,6 +2,8 @@ name: Test compilation
 
 on:
   push:
+    paths:
+      - template/**
   workflow_dispatch:
 
 jobs:
