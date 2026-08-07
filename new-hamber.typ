@@ -473,6 +473,7 @@
       #let page-path-str = "/" + it.path.join("/") + ".html"
       #let page-url = if base-url != none { base-url + page-path-str }
       #let up = ("..",) * (it.path.len() - 1)
+      #let pagefind-path = (up + ("pagefind",)).join("/")
       #let summary-image = if type(summary-image-renderer) == function {
         summary-image-renderer(it, base-url: base-url)
       }
@@ -509,13 +510,20 @@
           }
           meta(name: "twitter:description", content: "...")
           if pagefind-enabled {
-            let link-path = (up + ("pagefind", "pagefind-component-ui.css")).join("/")
-            let script-path = (up + ("pagefind", "pagefind-component-ui.js")).join("/")
+            let link-path = (pagefind-path, "pagefind-component-ui.css").join("/")
+            let script-path = (pagefind-path, "pagefind-component-ui.js").join("/")
             link(href: link-path, rel: "stylesheet")
-            script(src: script-path, defer: true)
+            script(src: script-path, type: "module")
           }
         })
         body(class: "dark:bg-zinc-900", {
+          if pagefind-enabled {
+            elem("pagefind-config")
+            elem("script", {
+              "document.querySelector('pagefind-config').setAttribute("
+              "'bundle-path', new URL('" + pagefind-path + "/', document.baseURI).pathname)"
+            })
+          }
           internal-html-renderer(
             tree,
             it,
