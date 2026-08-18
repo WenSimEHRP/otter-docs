@@ -1,4 +1,4 @@
-![Haita with the default theme New Hamber](https://raw.githubusercontent.com/wensimehrp/haita/0c6248d412416db04b466a68e2579ca5911c22cf/demo.avif)
+![Haita with the default theme New Hamber](https://raw.githubusercontent.com/wensimehrp/haita/c3f9c99f7c6b2fda62664be850698cd5e04c1480/demo.avif)
 
 # Haita
 
@@ -51,27 +51,48 @@ when compiling the documents.
 ## Example
 
 ``` typ
-#import "@preview/haita:0.3.0": * // Always remember to import the package
+#!/usr/bin/env -S typst compile --features bundle,html --format bundle
+// The line above compiles the documentation to an HTML bundle.
+// Additionally, you can watch the file using this command:
+//
+// $ typst watch --features bundle,html --format bundle main.typ
+//
+// You can also build and watch the PDF using the follow commands:
+//
+// $ typst compile --features bundle,html --format pdf main.typ
+// $ typst watch --features bundle,html --format pdf main.typ
+//
+#import "@preview/haita:0.3.0": * // Always import the package!
 #book(
   // Where the site will be deployed. Optional: it is only used for the
   // SEO metadata, everything inside the site is linked relatively.
   // base-url: "https://username.github.io/haita",
+
+  // This sets your html renderer. You can customize the HTML renderer
+  // using `html-renderer.with(...)`, or write your own!
+  html-renderer: new-hamber.html-renderer,
   // Your document's contents
   tree: (
     // You can add arbitrary content. The content will be displayed
     // in the summary, but will not generate html pages.
-    [= Introduction],
+    [= Welcome!],
     // This will create index.html. The content of the
-    // chapter will be from `doc/intro.typ`
-    chapter("index", content: include "doc/intro.typ"),
+    // chapter will be from `index.typ`
+    chapter("index", content: include "index.typ"),
     // This will create doc/tutorial.html. In this case,
     // the content of the chapter is not explicitly stated, so it
     // looks into ./doc/tutorial.typ in the current workspace.
-    chapter("doc/tutorial"),
+    chapter(
+      "doc/tutorial",
+      content: include "tutorial.typ",
+      // you can generate chapters procedurally
+      children: range(1, 6).map(num => chapter("doc/" + str(num), content: [
+        #title[Chapter #num]
+        This page is generated procedurally!
+      ])),
+    ),
     // You can add dividers, which will separate content in the summary.
     divider(),
-    // you can also add arbitrary content
-    [Made with Haita],
     // Alternatively, if you would like to directly include the content
     // without creating a new file, you can write it like this:
     chapter("my-page", content: [
@@ -80,8 +101,10 @@ when compiling the documents.
       = Heading 2
       foo bar baz
     ]),
+    // you can also add arbitrary content
+    [Made with Haita.],
     // you can add more chapters afterwards.
-  )
+  ),
 )
 ```
 
@@ -91,5 +114,5 @@ The source and the documentation are available under [Apache License
 v2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 [^1]: PDF generation only works when using `--foramt pdf` and does not
-    work with `--format` bundle. See
+    work with `--format bundle`. See
     <https://github.com/typst/typst/issues/8309> for details.

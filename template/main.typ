@@ -1,14 +1,14 @@
 #!/usr/bin/env -S typst compile --features bundle,html --format bundle
 // The line above compiles the documentation to an HTML bundle.
 // Additionally, you can watch the file using this command:
-// ```
-// typst watch --features bundle,html --format bundle main.typ
-// ```
+//
+// $ typst watch --features bundle,html --format bundle main.typ
+//
 // You can also build and watch the PDF using the follow commands:
-// ```
-// typst compile --features bundle,html --format pdf main.typ
-// typst watch --features bundle,html --format pdf main.typ
-// ```
+//
+// $ typst compile --features bundle,html --format pdf main.typ
+// $ typst watch --features bundle,html --format pdf main.typ
+//
 #import "@preview/haita:0.3.0": * // Always import the package!
 #book(
   // Where the site will be deployed. Optional: it is only used for the
