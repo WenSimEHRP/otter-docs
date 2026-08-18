@@ -43,7 +43,7 @@
 
 #let summary-renderer(current-tree, current-chapter) = for it in current-tree {
   let is-current-page = "page-label" in it and it.page-label == current-chapter.page-label
-  html.div(
+  html.li({
     if it.kind == "chapter" {
       {
         show html.elem.where(tag: "a"): set html.elem(attrs: if is-current-page {
@@ -65,13 +65,13 @@
         html.div(class: "p-2 prose prose-neutral prose-sm dark:prose-invert leading-normal", it.content)
       }
     }
-      + if "children" in it and it.children.len() > 0 {
-        html.div(
-          class: "ml-3 border-neutral-300 dark:border-zinc-600 border-l col-start-2 col-span-2",
-          summary-renderer(it.children, current-chapter),
-        )
-      },
-  )
+    if "children" in it and it.children.len() > 0 {
+      html.ol(
+        class: "ml-3 border-neutral-300 dark:border-zinc-600 border-l col-start-2 col-span-2",
+        summary-renderer(it.children, current-chapter),
+      )
+    }
+  })
 }
 
 #let flatten-tree(tree) = {
@@ -101,6 +101,82 @@
   dict
 }
 
+#let copy-btn(copy-class) = html.button(
+  title: "Copy",
+  class: {
+    copy-class
+    " absolute right-2 top-2 p-1 z-10 not-prose"
+    " text-md" // controls the icon size
+    " border border-neutral-300 bg-white text-neutral-600"
+    " opacity-0 group-hover:opacity-100 transition-opacity"
+    " hover:bg-neutral-100"
+    " dark:border-transparent dark:bg-zinc-800 dark:text-neutral-300 dark:hover:bg-zinc-700"
+  },
+  {
+    html.div(class: "clipboard", inline-svg(xml("assets/clipboard.svg")))
+    html.div(class: "check hidden", inline-svg(xml("assets/check.svg")))
+  },
+)
+
+
+#let with-footnote-section(body) = {
+  let footnote-state = state("page-footnote-state", ())
+  footnote-state.update(()) //
+
+  show footnote: it => context {
+    let idx = footnote-state.get().len() + 1
+    footnote-state.update(f => (..f, it))
+    html.sup(html.a(id: "footnote-back-" + str(idx), href: "#footnote-" + str(idx), str(idx)))
+  }
+
+  body
+
+  context {
+    let footnote-state = footnote-state.get()
+    if footnote-state.len() > 0 {
+      divider()
+      let items = footnote-state
+        .enumerate()
+        .map(((i, footnote)) => {
+          html.li(
+            id: "footnote-" + str(i + 1),
+            [#footnote.body #html.a(
+                class: "no-underline hover:underline",
+                href: "#footnote-back-" + str(i + 1),
+                sym.arrow.l.hook,
+              )],
+          )
+        })
+      html.section(class: "text-sm", html.ol(items.join()))
+    }
+  }
+}
+
+#let with-fancy-raw(it) = if target() != "html" {
+  it
+} else if it.lang == "typm-copy" {
+  import html: div
+  div(class: "relative group", title: it.text, {
+    copy-btn("copy-math-btn")
+    // the div here is to prevent Typst from creating a p for the copy-btn
+    div(math.equation(block: true, eval(it.text, mode: "math")))
+  })
+} else {
+  import html: div, pre, span
+  // add some custom display rules and add line counting
+  let code-fn = html.elem.with(
+    "code",
+    attrs: if it.lang != none { (data-lang: it.lang) } else { (:) },
+  )
+  div(class: "relative group", {
+    copy-btn("copy-code-btn")
+    pre(code-fn(for line in it.lines {
+      span(class: "line", line)
+      linebreak()
+    }))
+  })
+}
+
 
 #let footer-renderer(
   final-tree,
@@ -113,9 +189,12 @@
     let flattened = flatten-tree(final-tree).filter(it => it.kind == "chapter")
     let indexed = generate-dict(flattened)
     let current-idx = indexed.at(str(current.page-label))
-    let link-classes = "[&>a]:no-underline border-1 border-neutral-300 dark:border-transparent dark:bg-zinc-800 hover:bg-neutral-500/30 hover:shadow-xs [&>a]:block [&>a]:w-full [&>a]:h-full [&>a]:p-4 "
     if current-idx == none {
       return
+    }
+    let link-classes = {
+      "border-1 border-neutral-300 dark:border-transparent dark:bg-zinc-800 hover:bg-neutral-500/30 hover:shadow-xs"
+      " [&>a]:no-underline [&>a]:block [&>a]:w-full [&>a]:h-full [&>a]:p-4"
     }
     if current-idx > 0 {
       let info = flattened.at(current-idx - 1)
@@ -135,23 +214,6 @@
   },
 )
 
-#let copy-btn(copy-class) = html.button(
-  title: "Copy",
-  class: {
-    copy-class
-    " absolute right-2 top-2 p-1 z-10 not-prose"
-    " text-md" // controls the icon size
-    " border border-neutral-300 bg-white text-neutral-600"
-    " opacity-0 group-hover:opacity-100 transition-opacity"
-    " hover:bg-neutral-100"
-    " dark:border-transparent dark:bg-zinc-800 dark:text-neutral-300 dark:hover:bg-zinc-700"
-  },
-  {
-    html.div(class: "clipboard", inline-svg(xml("assets/clipboard.svg")))
-    html.div(class: "check hidden", inline-svg(xml("assets/check.svg")))
-  },
-)
-
 #let internal-html-renderer(
   final-tree,
   it,
@@ -160,56 +222,8 @@
   pagefind-enabled,
 ) = {
   import html: *
-  let footnote-state = state(str(it.page-label) + " Footnote State", ())
-  // discard auto generated footnote entries since we manually display them
-  show footnote: ftn => span(class: "footnote", {
-    let ftn-len = footnote-state.get().len()
-    let source-label = std.label(str(it.page-label) + "--source-label-" + str(ftn-len))
-    let target-label = std.label(str(it.page-label) + "--target-label-" + str(ftn-len))
-    footnote-state.update(state => (
-      state
-        + (
-          (
-            source-label: source-label,
-            target-label: target-label,
-            content: ftn.body,
-          ),
-        )
-    ))
-    [#std.super(std.link(target-label, str(ftn-len + 1))) #source-label]
-  })
-  // fix math scrolling
-  let div-fn = div.with(class: "overflow-x-auto w-full overflow-y-hidden [&>:first-child]:mx-auto py-1")
-  show math.equation.where(block: true).or(frame): it => if target() == "html" {
-    div-fn(it)
-  } else {
-    it
-  }
 
-  show raw.where(block: true): it => if target() != "html" {
-    it
-  } else if it.lang == "typm-copy" {
-    // copy math
-    div(class: "relative group", title: it.text, {
-      copy-btn("copy-math-btn")
-      // the div here is to prevent Typst from creating a p for the copy-btn
-      div(math.equation(block: true, eval(it.text, mode: "math")))
-    })
-  } else {
-    // add some custom display rules and add line counting
-    let code-fn = elem.with(
-      "code",
-      attrs: if it.lang != none { (data-lang: it.lang) } else { (:) },
-    )
-    div(class: "relative group", {
-      copy-btn("copy-code-btn")
-      pre(code-fn(for line in it.lines {
-        span(class: "line", line)
-        linebreak()
-      }))
-    })
-  }
-
+  // sidebar generation
   input(
     class: {
       "z-10 fixed md:hidden"
@@ -249,9 +263,9 @@
         ])
         elem("pagefind-modal")
       }
-      div(
+      ol(
         class: {
-          "border-neutral-300 dark:border-transparent overflow-x-auto "
+          "block border-neutral-300 dark:border-transparent overflow-x-auto "
           {
             "block border-y px-2 py-1 transition-shadow"
             " border-neutral-300 bg-white"
@@ -275,10 +289,10 @@
     },
   )
 
-  // only let pagefind index the article
   let main-content = elem(
     "article",
     attrs: (
+      // only let pagefind index the article
       id: "haita-main-content",
       class: {
         "p-3 sm:p-6 md:p-8 min-w-full mt-20 md:mt-0"
@@ -295,16 +309,25 @@
       data-pagefind-body: "",
     ),
     {
-      it.content
-      // footnote
-      let final = footnote-state.final()
-      if final.len() > 0 {
-        divider()
-        let items = final.map(it => enum.item[
-          #it.content #it.target-label
-          #span(class: "*:no-underline hover:underline ml-4", std.link(it.source-label)[↗])
-        ])
-        section(class: "text-sm text-neutral-500", std.enum(..items))
+      // fix math scrolling
+      {
+        let div-fn = div.with(class: "overflow-x-auto w-full overflow-y-hidden [&>:first-child]:mx-auto py-1")
+        show math.equation.where(block: true).or(frame): it => if target() == "html" {
+          div-fn(it)
+        } else {
+          it
+        }
+        show heading: h => {
+          elem("h" + str(h.level + 1))
+          content-to-str(h.body, id => {
+            let a = (id,)
+            [#a]
+            id
+          })
+        }
+        show raw.where(block: true): with-fancy-raw
+        show: with-footnote-section
+        it.content
       }
       // footer
       footer-renderer(final-tree, it, footer-content)
