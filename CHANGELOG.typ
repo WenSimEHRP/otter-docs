@@ -14,6 +14,30 @@
 
 This is the change log for #link("https://github.com/wensimehrp/haita")[Haita], a pure Typst documentation framework.
 
+= 0.4.0 (Aug. 27, 2026) <0.4.0>
+
+== Added
+
+- Paged (PDF) export support
+- Project template for quickly scaffolding new Haita sites
+- Context-specific links for PDF and HTML documentation contexts
+
+== Changed
+
+- Updated the paged renderer
+- Pagefind bundle is now loaded as a module script
+- Pagefind config is now edited via `querySelector`
+- Summary/sidebar entries now use `<li>` elements
+
+== Fixed
+
+- Long words (e.g. URLs) no longer cause horizontal overflow
+- `typm-copy` now renders correctly as math in the paged renderer
+
+= 0.4.0-rc2 (Aug. 17, 2026)
+
+(See #link(<0.4.0>)[0.4.0] for details)
+
 = 0.4.0-rc1 (Aug. 3, 2026)
 
 == Added
