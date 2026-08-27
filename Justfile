@@ -40,7 +40,7 @@ build-readme:
 make-release: build-readme
     rm -rf release
     mkdir -p release
-    cp -r lib.typ new-hamber.typ typst.toml LICENSE README.md assets fonts scripts styles template release/
+    cp -r lib.typ new-hamber.typ typst.toml LICENSE README.md assets fonts scripts styles template thumbnail.webp release/
 
 # installs the release. This assumes Linux w/ XDG
 install-release: make-release
