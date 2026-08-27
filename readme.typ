@@ -1,6 +1,6 @@
 // For generating README.md
 // DO NOT EDIT THE MARKDOWN FILE! Edit this template instead
-#image("demo.avif", alt: "Haita with the default theme New Hamber")
+#image("demo.webp", alt: "Haita with the default theme New Hamber")
 
 #let readme-fragment-1 = [
   Writing documentation is a lame task. It is even more boring and frustrating when you have to setup toolchains and

@@ -9,7 +9,7 @@
 // $ typst compile --features bundle,html --format pdf main.typ
 // $ typst watch --features bundle,html --format pdf main.typ
 //
-#import "@preview/haita:0.3.0": * // Always import the package!
+#import "@preview/haita:0.4.0": * // Always import the package!
 #book(
   // Where the site will be deployed. Optional: it is only used for the
   // SEO metadata, everything inside the site is linked relatively.

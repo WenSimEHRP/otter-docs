@@ -32,7 +32,7 @@ watch-pdf:
 build-readme:
     nix develop .#prepareRelease --command pandoc ./readme.typ -o README.md
     cat README.md | sed \
-        's#demo.avif#https://raw.githubusercontent.com/wensimehrp/haita/{{ commit_hash_full }}/demo.avif#g' \
+        's#demo.webp#https://raw.githubusercontent.com/wensimehrp/haita/{{ commit_hash_full }}/demo.webp#g' \
         > MODIFIED.md
     mv MODIFIED.md README.md
 
@@ -40,7 +40,7 @@ build-readme:
 make-release: build-readme
     rm -rf release
     mkdir -p release
-    cp -r lib.typ new-hamber.typ typst.toml LICENSE README.md assets fonts scripts styles release/
+    cp -r lib.typ new-hamber.typ typst.toml LICENSE README.md assets fonts scripts styles template release/
 
 # installs the release. This assumes Linux w/ XDG
 install-release: make-release

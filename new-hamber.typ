@@ -317,14 +317,8 @@
         } else {
           it
         }
-        show heading: h => {
-          elem("h" + str(h.level + 1))
-          content-to-str(h.body, id => {
-            let a = (id,)
-            [#a]
-            id
-          })
-        }
+        import "lib.typ": to-string
+        show heading: h => elem("h" + str(h.level + 1), to-string(h.body))
         show raw.where(block: true): with-fancy-raw
         show: with-footnote-section
         it.content

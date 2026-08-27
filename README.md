@@ -1,4 +1,4 @@
-![Haita with the default theme New Hamber](https://raw.githubusercontent.com/wensimehrp/haita/c3f9c99f7c6b2fda62664be850698cd5e04c1480/demo.avif)
+![Haita with the default theme New Hamber](https://raw.githubusercontent.com/wensimehrp/haita/a1db7aad5c53867cde87063198546d97b17bf171/demo.webp)
 
 # Haita
 
@@ -62,7 +62,7 @@ when compiling the documents.
 // $ typst compile --features bundle,html --format pdf main.typ
 // $ typst watch --features bundle,html --format pdf main.typ
 //
-#import "@preview/haita:0.3.0": * // Always import the package!
+#import "@local/haita:0.4.0": * // Always import the package!
 #book(
   // Where the site will be deployed. Optional: it is only used for the
   // SEO metadata, everything inside the site is linked relatively.
