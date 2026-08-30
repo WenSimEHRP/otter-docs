@@ -1,4 +1,4 @@
-![Haita with the default theme New Hamber](https://raw.githubusercontent.com/wensimehrp/haita/72f000643f47cd8d77b2cd7b95fe4bef1dc96ab6/demo.webp)
+![Haita with the default theme New Hamber](https://raw.githubusercontent.com/wensimehrp/haita/8831a6cb30ca27e52fc9ef42eede41485aafb995/demo.webp)
 
 # Haita
 
@@ -113,6 +113,6 @@ when compiling the documents.
 The source and the documentation are available under [Apache License
 v2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
-[^1]: PDF generation only works when using `--foramt pdf` and does not
+[^1]: PDF generation only works when using `--format pdf` and does not
     work with `--format bundle`. See
     <https://github.com/typst/typst/issues/8309> for details.

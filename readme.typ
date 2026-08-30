@@ -16,7 +16,7 @@
     - Fast compliation
     - Native support for `watch` and `serve`
     - PDF and HTML generation from the same source #footnote[
-        PDF generation only works when using `--foramt pdf` and does not work with `--format bundle`. See #link(
+        PDF generation only works when using `--format pdf` and does not work with `--format bundle`. See #link(
           "https://github.com/typst/typst/issues/8309",
         ) for details.
       ]
