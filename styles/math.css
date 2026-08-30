@@ -4,5 +4,5 @@ math {
 
 math[display="block"] {
     font-size: large;
-    width: max-content;
+    white-space: nowrap;
 }
