@@ -318,7 +318,7 @@
           it
         }
         import "lib.typ": to-string
-        show heading: h => elem("h" + str(h.level + 1), to-string(h.body))
+        show heading: h => elem("h" + str(h.level + 1), h.body)
         show raw.where(block: true): with-fancy-raw
         show: with-footnote-section
         it.content
