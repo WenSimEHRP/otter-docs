@@ -13,11 +13,6 @@ Welcome to the documentation for Haita #version (hǎi tǎ, Mandarin Pinyin, lit.
   ]
 }
 
-#warning[It's not ready yet!][
-  Haita is a decent choice for organizing long, comprehensive documentation. But just like Typst, Haita is an unfinished
-  project, and is (currently) not a serious tool.
-]
-
 #import "../readme.typ": license-fragment-1, readme-fragment-1
 
 #import "@preview/merman:0.1.0": mermaid
@@ -101,6 +96,11 @@ You can make a new project in Typst using Haita, set it to #link("https://github
 the only tool required.
 
 = An Unfinished Project
+
+#warning[It's not ready yet!][
+  Haita is a decent choice for organizing long, comprehensive documentation. But just like Typst, Haita is an unfinished
+  project, and is (currently) not a serious tool.
+]
 
 Haita is still missing some features, specifically:
 
